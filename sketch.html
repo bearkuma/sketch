@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+	<head>
+		<meta charset="UTF-8">
+		<title>お絵かき張</title>
+		<link rel="stylesheet" href="sketch.css">
+		<script src = "socket.io.js"></script>
+		<script src="sketch.js"></script>
+	</head>
+	<body>	
+		<div id = "panel">
+			<div><button id = "back">戻る</button></div>
+			<div><button id = "go">進む</button></div>
+			<div><button id = "colorSelect">色</button></div>
+			<div><button id = "boldSelect">太さ</button></div>
+			<div><button id = "eraseAll">全消</button></div>
+			<div id = "showingPencil"><img id = "pencil-picture" src="color_pencils/black111.png"></div>
+			<div><button id = "intoImg">保存</button></div>
+		    <span id = "colorBox">
+				<span><button id = "black"></button></span>
+				<span><button id = "red"></button></span>
+				<span><button id = "green"></button></span>
+				<span><button id = "blue"></button></span>
+				<span><button id = "yellow"></button></span>
+				<span><button id = "aqua"></button></span>
+				<span><button id = "purple"></button></span>
+				<span><button id = "white"></button></span>
+			</span>
+			<span id = "boldBox">
+				<span><button id = "superthin">極細</button></span>
+				<span><button id = "thin">細</button></span>
+				<span><button id = "middle">中</button></span>
+				<span><button id = "thick">太</button></span>
+				<span><button id = "superthick">極太</button></span>
+	     	</span>
+		</div>
+		<div id = "wrapper">
+			<canvas id ="canvas">
+				現在ご使用のブラウザではこのアプリは作動しません。他のブラウザをお試しください。
+			</canvas>
+		</div>
+	</body>
+</html>

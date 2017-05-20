@@ -1,0 +1,114 @@
+html{
+	height:100%;
+}
+body{
+	overflow:hidden;
+	position:fixed;
+	background-image:url(wood-pattern.jpg);
+	background-color:#808080;
+	height:100%;
+	width:100%;
+}
+#pencil-picture{
+	width:100%;
+}
+#panel{
+	margin:0;
+	width:6%;
+	height:100%;
+	float:left;
+}
+#panel > div > button {
+	background-color:#DD8080;
+	font-size:15px;
+	text-align:center;	
+	border-color:#DD8080;
+	margin:0px;
+	border-radius:25px;
+	width:100%;
+	height:80px;
+	cursor:pointer;
+}
+
+#panel > div > #intoImg {
+	background-color:#F00;
+	padding:0px;
+	height:80px;
+}
+#colorBox > span > button {
+	font-size:15px;	
+	border-color:#000;
+	margin:0px;
+	border-radius:25px;
+	width:11%;
+	height:80px;
+	cursor:pointer;
+}
+#boldBox > span > button{
+	background-color:#DD8080;
+	font-size:15px;
+	text-align:center;	
+	border-color:#DD8080;
+	margin:0px;
+	border-radius:25px;
+	width:18%;
+	height:80px;
+	cursor:pointer;
+}
+button:hover {
+	background-color:#DDD;
+}
+#colorBox{
+    background-color:#E9C385;
+    border:1px solid #E9C385;
+    box-shadow: 0 10px 10px #999;
+    display:none;
+    position:absolute;
+	top:165px;
+	left:90px;
+    text-align:center;
+	margin:0 0 0 0;
+    width:55%;
+}
+#black{
+	background-color:#000;
+}
+#red{
+	background-color:#F00;
+}
+#green{
+	background-color:#0F0;
+}
+#blue{
+	background-color:#00F;
+}
+#yellow{
+	background-color:#FF0;
+}
+#aqua{
+	background-color:#0FF;
+}
+#purple{
+	background-color:#F0F;
+}
+#white{
+	background-color:#FFF;
+}
+#boldBox{
+    background-color:#E9C385;
+    border:1px solid #E9C385;
+    box-shadow: 0 10px 10px #999;
+    display:none;
+    position:absolute;
+	top:255px;
+	left:90px;
+    text-align:center;
+    width:33%;
+}
+#wrapper{
+	background-color:#FFF;
+	margin:0 2% 1% 1%;
+	width:90%;
+	height:96%;
+	float:left;
+}

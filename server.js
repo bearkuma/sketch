@@ -16,7 +16,7 @@ var server = http.createServer(function(req,res){
 			res.writeHead(200,{'Content-type':'text/html'});
 			var strm = fs.createReadStream(fullpath);
 			strm.pipe(res);
-		} else if (ext.match(/\.(png|jpg|jpeg|gif||css|js)$/) && x.pathname != '/server.js'){
+		} else if (ext.match(/\.(png|jpg|jpeg|gif||css|js)$/) && x.pathname != '/chatserver.js'){
 			var strm = fs.createReadStream(fullpath);
 			strm.pipe(res);
 		} else {
@@ -45,7 +45,7 @@ io.sockets.on('connection',function(socket){
 			})
 			 socket.on('mousemove',function(data){
 				var user = socket.id;
-				socket.broadcast.emit('mousemove',{x:data.x,y:data.y,userId:user});
+				socket.broadcast.emit('mousemove',{x:data.x,y:data.y,userId:user,style:data.style,width:data.width});
 			 })
 			 socket.on('mouseup',function(data){
 				var user = socket.id;

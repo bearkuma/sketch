@@ -25,6 +25,13 @@ window.onload = function () {
 	var boldSelect = document.getElementById('boldSelect');
 	var colorBox = document.getElementById('colorBox');
 	var boldBox = document.getElementById('boldBox');
+	
+	var sketchLog = [];//今までの全ての描写情報を保存する配列を用意
+	var pathLog = [];//1つのパスの間の描写情報を保存する配列を用意
+	var lineToXLog = [];//lineTo情報(X)を保存する配列を用意
+	var lineToYLog = [];//lineTo情報(Y)を保存する配列を用意
+	var memoryLog = [];//戻るボタンで消した描写情報を保存する配列を用意
+	
 	colorSelect.onclick = function(){		
   		if(colorBox.style.display === 'block') {
     		colorBox.style.display = 'none';
@@ -52,6 +59,8 @@ window.onload = function () {
 	
 	if (canvas && canvas.getContext){
 		var ctx = canvas.getContext('2d');
+		ctx.fillStyle = '#FFF';
+		ctx.fillRect(0,0,w,h);
 		ctx.strokeStyle = '#000';
 		ctx.lineWidth =6;
 		ctx.lineCap = 'round';
@@ -211,29 +220,24 @@ window.onload = function () {
 		//左ボタンが押されたら描画準備
 	
 		canvas.onmousedown = function(e){
-		/*
 			ctx.beginPath();
 			ctx.moveTo(offsetX,offsetY);
 			ctx.lineTo(offsetX,offsetY);
 			lineToXLog.push(offsetX);
 			lineToYLog.push(offsetY);
 			ctx.stroke();
-		*/
-			socketio.emit('mousedown',{x:offsetX,y:offsetY})
+			socketio.emit('mousedown',{x:offsetX,y:offsetY,style:ctx.strokeStyle,width:ctx.lineWidth})
 		};
 		//ポインタが動いたら描画
 		canvas.onmousemove = function(e){
 			if(e.buttons === 1){
-		/*	
 			memoryLog = [];
 			ctx.lineTo(offsetX2,offsetY2);
 			lineToXLog.push(offsetX2);
 			lineToYLog.push(offsetY2);
 			ctx.stroke();
+			socketio.emit('mousemove',{x:offsetX2,y:offsetY2})
 			}
-		*/
-				socketio.emit('mousemove',{x:offsetX2,y:offsetY2})
-			};
 		};
 		
 		/*左ボタンが離されたらpathLogを作成し、sketchLogへ保存後削除する。
@@ -245,6 +249,7 @@ window.onload = function () {
 			pathLog = [];
 			lineToXLog =[];
 			lineToYLog =[];
+			socketio.emit('mouseup',{x:offsetX,y:offsetY,style:ctx.strokeStyle,width:ctx.lineWidth,lineToXlog:lineToXLog,lineToYLog:lineToYLog})
 		};
 		//ポインタが画面外へ出て行った時の挙動
 		canvas.onmouseout = function (e){
@@ -255,6 +260,7 @@ window.onload = function () {
 			pathLog = [];
 			lineToXLog =[];
 			lineToYLog =[];
+			socketio.emit('mouseout',{x:offsetX,y:offsetY,style:ctx.strokeStyle,width:ctx.lineWidth,lineToXlog:lineToXLog,lineToYLog:lineToYLog})
 			}
 		};
 		//ポインタが画面内へ入った時の挙動
@@ -265,13 +271,10 @@ window.onload = function () {
 			 offsetX = offsetX5;
 			 offsetY = offsetY5;
 			}
-		}
+			socketio.emit('mouseover',{x:offsetX5,y:offsetY5})
+		};
 		//戻るボタンと進むボタンの挙動
-		var sketchLog = [];//今までの全ての描写情報を保存する配列を用意
-		var pathLog = [];//1つのパスの間の描写情報を保存する配列を用意
-		var lineToXLog = [];//lineTo情報(X)を保存する配列を用意
-		var lineToYLog = [];//lineTo情報(Y)を保存する配列を用意
-		var memoryLog = [];//戻るボタンで消した描写情報を保存する配列を用意
+		
 		back.onclick = function(){
 			if(sketchLog.length > 0){
 				ctx.save(); 
@@ -312,7 +315,7 @@ window.onload = function () {
 		}
 		//画像化して保存する
 		intoImg.onclick = function(){
-			ctx.fillStyle = '#FFF';
+			/*ctx.fillStyle = '#FFF';
 			ctx.fillRect(0,0,w,h);
 			for (var i = 0; i < sketchLog.length; i++){
 					ctx.beginPath();
@@ -324,6 +327,7 @@ window.onload = function () {
 					}
 					ctx.stroke();
 			}
+			*/
 			var imgUrl =canvas.toDataURL();	
 			var mydraw = document.createElement('a');
          		var filename = prompt('何というファイル名で保存しますか')
@@ -343,32 +347,85 @@ window.onload = function () {
 		function start(){
 			socketio.emit('enter',{value: '入室'});
 		}
-		
+		/*
+		var screenNum = -100;
 		socketio.on('enter', function(data){
-			var hand = data.userId;
-			hand = canvas.getContext('2d');
-			console.log('start server');
-			
+			screenNum--;
+			var mycanvas = document.createElement('canvas');
+			mycanvas.width = w;
+			mycanvas.height = h;
+			mycanvas.id = data.userId;
+			wrapper.appendChild(mycanvas);
+			mycanvas.style.zIndex = screenNum;
+			mycanvas.style.opacity = 1;
+			mycanvas.style.position = 'absolute';
+			mycanvas.style.top = 0;
+			mycanvas.style.left = 0;
 		});
+		*/
+		
 		socketio.on('mousedown', function(data){
-			var hand = data.userId;
-			hand = canvas.getContext('2d');
+			/*var thiscanvas = document.getElementById(data.userId);
+			console.log(data.userId);
+			*/
+			data.userId = canvas.getContext('2d');
+			//data.userId.strokeStyle = data.style;
+			//data.userId.lineWidth = data.width;
 			mdown(data.x,data.y);
 			function mdown(x,y){
-			hand.beginPath();
-			hand.moveTo(x,y);
-			hand.lineTo(x,y);
-			hand.stroke();
-		}
+			data.userId.beginPath();
+			data.userId.moveTo(x,y);
+			data.userId.lineTo(x,y);
+			lineToXLog.push(x);
+			lineToYLog.push(y);
+			data.userId.stroke();
+			}
 		});
 		socketio.on('mousemove', function(data){
-			var hand = data.userId;
-			hand = canvas.getContext('2d');
+			data.userId = canvas.getContext('2d');
 			mmove(data.x,data.y);
 			function mmove(x,y){
-			hand.lineTo(x,y);
-			hand.stroke();
+			data.userId.lineTo(x,y);
+			lineToXLog.push(x);
+			lineToYLog.push(y);
+			data.userId.stroke();
+			}
+		});
+	
+		socketio.on('mouseup', function(data){
+			data.userId = canvas.getContext('2d');
+			mup(data.style,data.width,data.x,data.y,data.lineToXlog,data.lineToYLog);
+			function mup(style,width,x,y,lineToXLog,lineToYLog){
+			pathLog.push(style,width,x,y,lineToXLog,lineToYLog);
+			sketchLog.push(pathLog);
+			pathLog = [];
+			lineToXLog =[];
+			lineToYLog =[];
+			}
+		});
+		
+		socketio.on('mouseout', function(data){
+			data.userId = canvas.getContext('2d');
+			mout(data.style,data.width,data.x,data.y,data.lineToXlog,data.lineToYLog);
+			function mout(style,width,x,y,lineToXLog,lineToYLog){
+			memoryLog = [];
+			pathLog.push(style.width,x,y,lineToXLog,lineToYLog);
+			sketchLog.push(pathLog);
+			pathLog = [];
+			lineToXLog =[];
+			lineToYLog =[];
+			}
+		});
+	
+	
+		socketio.on('mouseover', function(data){
+			data.userId = canvas.getContext('2d');
+			mover(data.x,data.y);
+			function mover(x,y){
+			data.userId.beginPath();
+			data.userId.moveTo(x,y);
 		}
 		});
+		
 		
 }

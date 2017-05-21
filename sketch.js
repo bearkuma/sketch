@@ -365,7 +365,7 @@ window.onload = function () {
 			var hand = data.userId;
 			hand = canvas.getContext('2d');
 			mmove(data.x,data.y);
-			function mdown(x,y){
+			function mmove(x,y){
 			hand.lineTo(offsetX2,offsetY2);
 			hand.stroke();
 		}

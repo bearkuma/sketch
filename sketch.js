@@ -426,6 +426,4 @@ window.onload = function () {
 			data.userId.moveTo(x,y);
 		}
 		});
-		
-		
 }

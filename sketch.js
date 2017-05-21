@@ -220,22 +220,26 @@ window.onload = function () {
 		//左ボタンが押されたら描画準備
 	
 		canvas.onmousedown = function(e){
+			/*
 			ctx.beginPath();
 			ctx.moveTo(offsetX,offsetY);
 			ctx.lineTo(offsetX,offsetY);
 			lineToXLog.push(offsetX);
 			lineToYLog.push(offsetY);
 			ctx.stroke();
+			*/
 			socketio.emit('mousedown',{x:offsetX,y:offsetY,style:ctx.strokeStyle,width:ctx.lineWidth})
 		};
 		//ポインタが動いたら描画
 		canvas.onmousemove = function(e){
 			if(e.buttons === 1){
+			/*
 			memoryLog = [];
 			ctx.lineTo(offsetX2,offsetY2);
 			lineToXLog.push(offsetX2);
 			lineToYLog.push(offsetY2);
 			ctx.stroke();
+			*/
 			socketio.emit('mousemove',{x:offsetX2,y:offsetY2,style:ctx.strokeStyle,width:ctx.lineWidth})
 			}
 		};
@@ -244,34 +248,40 @@ window.onload = function () {
 		　また、lineToXLogとlineToYLogも初期化しておく。
 		*/
 		canvas.onmouseup = function(e){
+			/*
 			pathLog.push(ctx.strokeStyle,ctx.lineWidth,offsetX,offsetY,lineToXLog,lineToYLog);
 			sketchLog.push(pathLog);
 			pathLog = [];
 			lineToXLog =[];
 			lineToYLog =[];
+			*/
 			socketio.emit('mouseup',{x:offsetX,y:offsetY,style:ctx.strokeStyle,width:ctx.lineWidth,lineToXlog:lineToXLog,lineToYLog:lineToYLog})
 		};
 		//ポインタが画面外へ出て行った時の挙動
 		canvas.onmouseout = function (e){
 			if(e.buttons === 1){
+				/*
 			memoryLog = [];
 			pathLog.push(ctx.strokeStyle,ctx.lineWidth,offsetX,offsetY,lineToXLog,lineToYLog);
 			sketchLog.push(pathLog);
 			pathLog = [];
 			lineToXLog =[];
 			lineToYLog =[];
+			*/
 			socketio.emit('mouseout',{x:offsetX,y:offsetY,style:ctx.strokeStyle,width:ctx.lineWidth,lineToXlog:lineToXLog,lineToYLog:lineToYLog})
 			}
 		};
 		//ポインタが画面内へ入った時の挙動
 		canvas.onmouseover = function(e){
 			if(e.buttons === 1){
+				/*
 			 ctx.beginPath();
 			 ctx.moveTo(offsetX5,offsetY5);
 			 offsetX = offsetX5;
 			 offsetY = offsetY5;
-			}
+			*/
 			socketio.emit('mouseover',{x:offsetX5,y:offsetY5})
+			}
 		};
 		//戻るボタンと進むボタンの挙動
 		

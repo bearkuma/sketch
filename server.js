@@ -43,7 +43,7 @@ io.sockets.on('connection',function(socket){
 			})
 			 socket.on('mousemove',function(data){
 				var user = socket.id;
-				io.sockets.emit('mousedown',{x:data.x,y:data.y,userId:user});
+				io.sockets.emit('mousemove',{x:data.x,y:data.y,userId:user});
 			})
 			 socket.on('mouseup',function(data){
 				var msg = 

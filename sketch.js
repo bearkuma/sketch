@@ -236,7 +236,7 @@ window.onload = function () {
 			lineToXLog.push(offsetX2);
 			lineToYLog.push(offsetY2);
 			ctx.stroke();
-			socketio.emit('mousemove',{x:offsetX2,y:offsetY2})
+			socketio.emit('mousemove',{x:offsetX2,y:offsetY2,style:ctx.strokeStyle,width:ctx.lineWidth})
 			}
 		};
 		
@@ -373,22 +373,31 @@ window.onload = function () {
 			//data.userId.lineWidth = data.width;
 			mdown(data.x,data.y);
 			function mdown(x,y){
+			data.userId.save();
+			data.userId.strokeStyle = data.style;
+			data.userId.lineWidth = data.width;
+				console.log(data.style);
 			data.userId.beginPath();
 			data.userId.moveTo(x,y);
 			data.userId.lineTo(x,y);
 			lineToXLog.push(x);
 			lineToYLog.push(y);
 			data.userId.stroke();
+			data.userId.restore();
 			}
 		});
 		socketio.on('mousemove', function(data){
 			data.userId = canvas.getContext('2d');
 			mmove(data.x,data.y);
 			function mmove(x,y){
+			data.userId.save();
+			data.userId.strokeStyle = data.style;
+			data.userId.lineWidth = data.width;	
 			data.userId.lineTo(x,y);
 			lineToXLog.push(x);
 			lineToYLog.push(y);
 			data.userId.stroke();
+			data.userId.restore();
 			}
 		});
 	
@@ -426,4 +435,6 @@ window.onload = function () {
 			data.userId.moveTo(x,y);
 		}
 		});
+		
+		
 }

@@ -53,11 +53,11 @@ io.sockets.on('connection',function(socket){
 			})
 			 socket.on('mouseout',function(data){
 				var user = socket.id;
-				socket.broadcast.emit('mouseout',{x:data.x,y:data.y,userId:user,style:data.style,width:data.width,lineToXlog:data.lineToXlog,lineToYLog:data.lineToYLog});
+				io.sockets.emit('mouseout',{x:data.x,y:data.y,userId:user,style:data.style,width:data.width,lineToXlog:data.lineToXlog,lineToYLog:data.lineToYLog});
 			})
 			 socket.on('mouseover',function(data){
 				var user = socket.id;
-				socket.broadcast.emit('mouseover',{x:data.x,y:data.y,userId:user});
+				io.sockets.emit('mouseover',{x:data.x,y:data.y,userId:user});
 			})
 			 
 });

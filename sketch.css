@@ -106,7 +106,7 @@ button:hover {
     width:33%;
 }
 #wrapper{
-	background-color:#FFF;
+	background-color:rgba(255,255,255,1);
 	margin:0 2% 1% 1%;
 	width:90%;
 	height:96%;

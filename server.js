@@ -41,15 +41,15 @@ io.sockets.on('connection',function(socket){
 			})
 			  socket.on('mousedown',function(data){
 				var user = socket.id;
-				socket.broadcast.emit('mousedown',{x:data.x,y:data.y,userId:user,style:data.style,width:data.width});
+				io.sockets.emit('mousedown',{x:data.x,y:data.y,userId:user,style:data.style,width:data.width});
 			})
 			 socket.on('mousemove',function(data){
 				var user = socket.id;
-				socket.broadcast.emit('mousemove',{x:data.x,y:data.y,userId:user,style:data.style,width:data.width});
+				io.sockets.emit('mousemove',{x:data.x,y:data.y,userId:user,style:data.style,width:data.width});
 			 })
 			 socket.on('mouseup',function(data){
 				var user = socket.id;
-				socket.broadcast.emit('mouseup',{x:data.x,y:data.y,userId:user,style:data.style,width:data.width,lineToXlog:data.lineToXlog,lineToYLog:data.lineToYLog});
+				io.sockets.emit('mouseup',{x:data.x,y:data.y,userId:user,style:data.style,width:data.width,lineToXlog:data.lineToXlog,lineToYLog:data.lineToYLog});
 			})
 			 socket.on('mouseout',function(data){
 				var user = socket.id;

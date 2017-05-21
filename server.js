@@ -34,27 +34,30 @@ var io = require('socket.io').listen(server);
 
 io.sockets.on('connection',function(socket){
 			  socket.on('enter',function(data){
+			/*
 				var user = socket.id;
-				io.sockets.emit('enter',{userId:user});
+				socket.broadcast.emit('enter',{userId:user});
+			*/
 			})
 			  socket.on('mousedown',function(data){
 				var user = socket.id;
-				io.sockets.emit('mousedown',{x:data.x,y:data.y,userId:user});
+				socket.broadcast.emit('mousedown',{x:data.x,y:data.y,userId:user,style:data.style,width:data.width});
 			})
 			 socket.on('mousemove',function(data){
 				var user = socket.id;
-				io.sockets.emit('mousemove',{x:data.x,y:data.y,userId:user});
-			})
+				socket.broadcast.emit('mousemove',{x:data.x,y:data.y,userId:user});
+			 })
 			 socket.on('mouseup',function(data){
-				var msg = 
-				io.sockets.emit('mouseup',{value: msg});
+				var user = socket.id;
+				socket.broadcast.emit('mouseup',{x:data.x,y:data.y,userId:user,style:data.style,width:data.width,lineToXlog:data.lineToXlog,lineToYLog:data.lineToYLog});
 			})
 			 socket.on('mouseout',function(data){
-				var msg = 
-				io.sockets.emit('mouseout',{value: msg});
+				var user = socket.id;
+				socket.broadcast.emit('mouseout',{x:data.x,y:data.y,userId:user,style:data.style,width:data.width,lineToXlog:data.lineToXlog,lineToYLog:data.lineToYLog});
 			})
 			 socket.on('mouseover',function(data){
-				var msg = 
-				io.sockets.emit('mouseover',{value: msg});
+				var user = socket.id;
+				socket.broadcast.emit('mouseover',{x:data.x,y:data.y,userId:user});
 			})
+			 
 });

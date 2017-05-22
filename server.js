@@ -49,7 +49,7 @@ io.sockets.on('connection',function(socket){
 			  socket.on('mousedown',function(data){
 				 
 				var user = socket.id;
-				socket.broadcast.emit('mousedown',{x:data.x,y:data.y,userId:user,style:data.style,width:data.width});
+				socket.broadcast.emit('mousedown',{x:data.x,y:data.y,x2:data.x2,y2:data.y2,userId:user,style:data.style,width:data.width});
 				
 			})
 			 socket.on('mousemove',function(data){

@@ -119,13 +119,12 @@ button:hover {
 }
 #canvas{
 	position:absolute;
-
 	opacity:0;
 }
 
 #subcanvas{
 	position:absolute;
-	z-index: -1;
+	z-index: -10;
 }
 
 #backcanvas{

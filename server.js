@@ -31,33 +31,55 @@ var server = http.createServer(function(req,res){
 console.log('start server');
 
 var io = require('socket.io').listen(server);
-
+var users = [];
 io.sockets.on('connection',function(socket){
+			　　
 			  socket.on('enter',function(data){
-			/*
-				var user = socket.id;
+				  var user = socket.id;
+				  if(users.length != 0){
+					io.to(socket.id).emit('onlyMe', {users:users,userId:user});
+				  }
+				
+				users.push(socket.id);
 				socket.broadcast.emit('enter',{userId:user});
-			*/
+				//io.sockets.emit('enter',{userId:user});
+			
 			})
+			  
 			  socket.on('mousedown',function(data){
+				 
 				var user = socket.id;
-				io.sockets.emit('mousedown',{x:data.x,y:data.y,userId:user,style:data.style,width:data.width});
+				socket.broadcast.emit('mousedown',{x:data.x,y:data.y,userId:user,style:data.style,width:data.width});
+				
 			})
 			 socket.on('mousemove',function(data){
+				
 				var user = socket.id;
-				io.sockets.emit('mousemove',{x:data.x,y:data.y,userId:user,style:data.style,width:data.width});
+				socket.broadcast.emit('mousemove',{x:data.x,y:data.y,userId:user,style:data.style,width:data.width});
+	
 			 })
 			 socket.on('mouseup',function(data){
 				var user = socket.id;
-				io.sockets.emit('mouseup',{x:data.x,y:data.y,userId:user,style:data.style,width:data.width,lineToXlog:data.lineToXlog,lineToYLog:data.lineToYLog});
+				socket.broadcast.emit('mouseup',{x:data.x,y:data.y,userId:user,style:data.style,width:data.width,lineToXlog:data.lineToXlog,lineToYLog:data.lineToYLog});
 			})
 			 socket.on('mouseout',function(data){
 				var user = socket.id;
-				io.sockets.emit('mouseout',{x:data.x,y:data.y,userId:user,style:data.style,width:data.width,lineToXlog:data.lineToXlog,lineToYLog:data.lineToYLog});
+				socket.broadcast.emit('mouseout',{x:data.x,y:data.y,userId:user,style:data.style,width:data.width,lineToXlog:data.lineToXlog,lineToYLog:data.lineToYLog});
 			})
 			 socket.on('mouseover',function(data){
 				var user = socket.id;
-				io.sockets.emit('mouseover',{x:data.x,y:data.y,userId:user});
+				socket.broadcast.emit('mouseover',{x:data.x,y:data.y,userId:user});
+			})
+			socket.on('eraseAll',function(data){
+				var user = socket.id;
+				io.sockets.emit('eraseAll',{user:user,users:users});
+			})
+			
+			socket.on('disconnect',function(){
+				var idx = users.indexOf(socket.id);
+				if(idx >= 0){
+ 					users.splice(idx, 1); 
+				}
 			})
 			 
 });

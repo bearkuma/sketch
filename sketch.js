@@ -59,6 +59,7 @@ window.onload = function () {
 	canvas.height = h;
 	subcanvas.width = w;
 	subcanvas.height = h;
+	subcanvas.style.zIndex = -10;
 	backcanvas.width = w;
 	backcanvas.height = h;
 	
@@ -232,7 +233,7 @@ window.onload = function () {
 			lineToYLog.push(offsetY);
 			ctx.stroke();
 			
-			socketio.emit('mousedown',{x:offsetX,y:offsetY,style:ctx.strokeStyle,width:ctx.lineWidth})
+			socketio.emit('mousedown',{x:offsetX,y:offsetY,x2:offsetX4,y2:offsetY4,style:ctx.strokeStyle,width:ctx.lineWidth})
 		};
 		//ポインタが動いたら描画
 		canvas.onmousemove = function(e){
@@ -374,7 +375,7 @@ window.onload = function () {
 				mycanvas.style.position = 'absolute';
 				mycanvas.style.top = 0;
 				mycanvas.style.left = 0;
-				mycanvas.style.zIndex = -1;
+				mycanvas.style.zIndex = -10;
 				myId = data.userId;
 				console.log(data.userId);
 			}
@@ -390,10 +391,10 @@ window.onload = function () {
 			mycanvas.style.position = 'absolute';
 			mycanvas.style.top = 0;
 			mycanvas.style.left = 0;
-			mycanvas.style.zIndex = -1;
+			mycanvas.style.zIndex = -10;
 		});
 		
-		
+		var moverNum = 0;
 		socketio.on('mousedown', function(data){
 			var thiscanvas = document.getElementById(data.userId);
 			console.log(data.userId);
@@ -401,19 +402,25 @@ window.onload = function () {
 			//data.userId = canvas.getContext('2d');
 			//data.userId.strokeStyle = data.style;
 			//data.userId.lineWidth = data.width;
-			mdown(data.x,data.y);
+			console.log(moverNum);
+			if(moverNum === 0){
+			 mdown(data.x,data.y);
+			} else {
+			 mdown(data.x2,data.y2);
+			 moverNum = 0;
+			}
 			function mdown(x,y){
-			data.userId.save();
+			//data.userId.save();
 			data.userId.strokeStyle = data.style;
 			data.userId.lineWidth = data.width;
-				console.log(data.style);
+			
 			data.userId.beginPath();
 			data.userId.moveTo(x,y);
 			data.userId.lineTo(x,y);
 			//lineToXLog.push(x);
 			//lineToYLog.push(y);
 			data.userId.stroke();
-			data.userId.restore();
+			//data.userId.restore();
 			}
 		});
 		socketio.on('mousemove', function(data){
@@ -423,15 +430,15 @@ window.onload = function () {
 			//data.userId = canvas.getContext('2d');
 			mmove(data.x,data.y);
 			function mmove(x,y){
-			data.userId.save();
+			//data.userId.save();
 			data.userId.strokeStyle = data.style;
 			data.userId.lineWidth = data.width;
 			data.userId.lineTo(x,y);
-			data.userId.moveTo(x,y);
+			//data.userId.moveTo(x,y);
 			//lineToXLog.push(x);
 			//lineToYLog.push(y);
 			data.userId.stroke();
-			data.userId.restore();
+			//data.userId.restore();
 			}
 		});
 		/*
@@ -460,38 +467,57 @@ window.onload = function () {
 			}
 		});
 	
-	
+		*/
 		socketio.on('mouseover', function(data){
 			data.userId = canvas.getContext('2d');
 			mover(data.x,data.y);
 			function mover(x,y){
 			data.userId.beginPath();
 			data.userId.moveTo(x,y);
+			//moverNum = 1;
 		}
 		});
-		*/
+		
 		socketio.on('eraseAll', function(data){
 			if(data.users.length > 1){
-				console.log(data.users.length);
-				console.log(data.users);
-				console.log(myId);
+				
 				for(var i = 0; i < data.users.length; i++){
 						if(data.users[i] != myId){
 						var erasecanvas = document.getElementById(data.users[i]);
-						console.log(erasecanvas);
+						
+						
 						data.users[i]= erasecanvas.getContext('2d');
-						data.users[i].fillStyle = '#FFF';
-						data.users[i].fillRect(0,0,w,h);
+						data.users[i].clearRect(0,0,w,h);
+						//data.users[i].fillStyle = '#FFF';
+						//data.users[i].fillRect(0,0,w,h);
+							console.log('hi');
+						/*data.users[i].strokeStyle = '#FFF';
+						data.users[i].lineWidth = h/3;
+						data.users[i].beginPath();
+						data.users[i].moveTo(0,h/2);
+						data.users[i].lineTo(w,h/2);
+						data.users[i].stroke();
+						*/
+					} else if(data.users[i] === myId){
+						
+						ctx.fillStyle = '#FFF';
+						ctx.fillRect(0,0,w,h);
+						pathLog.push("#FFF",h,0,h/2,[w],[h/2]);
+						sketchLog.push(pathLog);		
+						pathLog = [];
+						
 					}
 				}
-				ctx.save(); 
+				
+			} 
+				/*
 				ctx.fillStyle = '#FFF';
 				ctx.fillRect(0,0,w,h);
-				pathLog.push("#FFF",h,0,h/2,[w],[h/2	]);
+				pathLog.push("#FFF",h,0,h/2,[w],[h/2]);
 				sketchLog.push(pathLog);		
 				pathLog = [];
-				ctx.restore();
-			}
+				*/
+			
 		});
 		
 	}

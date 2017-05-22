@@ -48,7 +48,8 @@ window.onload = function () {
 	}
  //お絵かき張本体
 	var canvas = document.getElementById('canvas');	
-	
+	var subcanvas = document.getElementById('subcanvas');	
+	var backcanvas = document.getElementById('backcanvas');	
 	//cursor画像の初期設定
 	canvas.style.cursor = 'url(color_pencils/black95.png) 0 95,auto';
 		
@@ -56,9 +57,13 @@ window.onload = function () {
 	var h = wrapper.clientHeight;
 	canvas.width = w;
 	canvas.height = h;
+	subcanvas.width = w;
+	subcanvas.height = h;
+	backcanvas.width = w;
+	backcanvas.height = h;
 	
 	if (canvas && canvas.getContext){
-		var ctx = canvas.getContext('2d');
+		var ctx = subcanvas.getContext('2d');
 		ctx.fillStyle = '#FFF';
 		ctx.fillRect(0,0,w,h);
 		ctx.strokeStyle = '#000';
@@ -154,11 +159,10 @@ window.onload = function () {
 		//全消の実装
 		eraseAll.onclick = function(){
 			if(window.confirm('全て消します。本当によろしいですか？')){	
-			ctx.fillStyle = '#FFF';
-			ctx.fillRect(0,0,w,h);
-			pathLog.push("#FFF",h,0,h/2,[w],[h/2	]);
-			sketchLog.push(pathLog);		
-			pathLog = [];
+			//ctx.fillStyle = '#FFF';
+			//ctx.fillRect(0,0,w,h);
+			socketio.emit('eraseAll',{msg:'clear'})
+				
 			}
 		};
 		//ポインタの座標を取得
@@ -220,26 +224,26 @@ window.onload = function () {
 		//左ボタンが押されたら描画準備
 	
 		canvas.onmousedown = function(e){
-			/*
+			
 			ctx.beginPath();
 			ctx.moveTo(offsetX,offsetY);
 			ctx.lineTo(offsetX,offsetY);
 			lineToXLog.push(offsetX);
 			lineToYLog.push(offsetY);
 			ctx.stroke();
-			*/
+			
 			socketio.emit('mousedown',{x:offsetX,y:offsetY,style:ctx.strokeStyle,width:ctx.lineWidth})
 		};
 		//ポインタが動いたら描画
 		canvas.onmousemove = function(e){
 			if(e.buttons === 1){
-			/*
+			
 			memoryLog = [];
 			ctx.lineTo(offsetX2,offsetY2);
 			lineToXLog.push(offsetX2);
 			lineToYLog.push(offsetY2);
 			ctx.stroke();
-			*/
+			
 			socketio.emit('mousemove',{x:offsetX2,y:offsetY2,style:ctx.strokeStyle,width:ctx.lineWidth})
 			}
 		};
@@ -248,38 +252,38 @@ window.onload = function () {
 		　また、lineToXLogとlineToYLogも初期化しておく。
 		*/
 		canvas.onmouseup = function(e){
-			/*
+			
 			pathLog.push(ctx.strokeStyle,ctx.lineWidth,offsetX,offsetY,lineToXLog,lineToYLog);
 			sketchLog.push(pathLog);
 			pathLog = [];
 			lineToXLog =[];
 			lineToYLog =[];
-			*/
+			
 			socketio.emit('mouseup',{x:offsetX,y:offsetY,style:ctx.strokeStyle,width:ctx.lineWidth,lineToXlog:lineToXLog,lineToYLog:lineToYLog})
 		};
 		//ポインタが画面外へ出て行った時の挙動
 		canvas.onmouseout = function (e){
 			if(e.buttons === 1){
-				/*
+				
 			memoryLog = [];
 			pathLog.push(ctx.strokeStyle,ctx.lineWidth,offsetX,offsetY,lineToXLog,lineToYLog);
 			sketchLog.push(pathLog);
 			pathLog = [];
 			lineToXLog =[];
 			lineToYLog =[];
-			*/
+			
 			socketio.emit('mouseout',{x:offsetX,y:offsetY,style:ctx.strokeStyle,width:ctx.lineWidth,lineToXlog:lineToXLog,lineToYLog:lineToYLog})
 			}
 		};
 		//ポインタが画面内へ入った時の挙動
 		canvas.onmouseover = function(e){
 			if(e.buttons === 1){
-				/*
+				
 			 ctx.beginPath();
 			 ctx.moveTo(offsetX5,offsetY5);
 			 offsetX = offsetX5;
 			 offsetY = offsetY5;
-			*/
+			
 			socketio.emit('mouseover',{x:offsetX5,y:offsetY5})
 			}
 		};
@@ -338,7 +342,7 @@ window.onload = function () {
 					ctx.stroke();
 			}
 			*/
-			var imgUrl =canvas.toDataURL();	
+			var imgUrl =subcanvas.toDataURL();// + canvas.toDataURL();	
 			var mydraw = document.createElement('a');
          		var filename = prompt('何というファイル名で保存しますか')
             		if(filename){
@@ -350,35 +354,51 @@ window.onload = function () {
 				window.open(imgUrl);
 			}
 		}
-	}
+	
 	
 		
 		start();
 		function start(){
 			socketio.emit('enter',{value: '入室'});
 		}
-		/*
-		var screenNum = -100;
+		
+		var myId = null;
+		socketio.on('onlyMe', function(data){
+			 if(data.users != undefined){
+			for(i = 0; i<data.users.length; i++){
+				var mycanvas = document.createElement('canvas');
+				mycanvas.width = w;
+				mycanvas.height = h;
+				mycanvas.id = data.users[i];
+				wrapper.appendChild(mycanvas);
+				mycanvas.style.position = 'absolute';
+				mycanvas.style.top = 0;
+				mycanvas.style.left = 0;
+				mycanvas.style.zIndex = -1;
+				myId = data.userId;
+				console.log(data.userId);
+			}
+			}
+		});
+		
 		socketio.on('enter', function(data){
-			screenNum--;
 			var mycanvas = document.createElement('canvas');
 			mycanvas.width = w;
 			mycanvas.height = h;
 			mycanvas.id = data.userId;
 			wrapper.appendChild(mycanvas);
-			mycanvas.style.zIndex = screenNum;
-			mycanvas.style.opacity = 1;
 			mycanvas.style.position = 'absolute';
 			mycanvas.style.top = 0;
 			mycanvas.style.left = 0;
+			mycanvas.style.zIndex = -1;
 		});
-		*/
+		
 		
 		socketio.on('mousedown', function(data){
-			/*var thiscanvas = document.getElementById(data.userId);
+			var thiscanvas = document.getElementById(data.userId);
 			console.log(data.userId);
-			*/
-			data.userId = canvas.getContext('2d');
+			data.userId = thiscanvas.getContext('2d');
+			//data.userId = canvas.getContext('2d');
 			//data.userId.strokeStyle = data.style;
 			//data.userId.lineWidth = data.width;
 			mdown(data.x,data.y);
@@ -390,27 +410,31 @@ window.onload = function () {
 			data.userId.beginPath();
 			data.userId.moveTo(x,y);
 			data.userId.lineTo(x,y);
-			lineToXLog.push(x);
-			lineToYLog.push(y);
+			//lineToXLog.push(x);
+			//lineToYLog.push(y);
 			data.userId.stroke();
 			data.userId.restore();
 			}
 		});
 		socketio.on('mousemove', function(data){
-			data.userId = canvas.getContext('2d');
+			var thiscanvas = document.getElementById(data.userId);
+			console.log(data.userId);
+			data.userId = thiscanvas.getContext('2d');
+			//data.userId = canvas.getContext('2d');
 			mmove(data.x,data.y);
 			function mmove(x,y){
 			data.userId.save();
 			data.userId.strokeStyle = data.style;
-			data.userId.lineWidth = data.width;	
+			data.userId.lineWidth = data.width;
 			data.userId.lineTo(x,y);
-			lineToXLog.push(x);
-			lineToYLog.push(y);
+			data.userId.moveTo(x,y);
+			//lineToXLog.push(x);
+			//lineToYLog.push(y);
 			data.userId.stroke();
 			data.userId.restore();
 			}
 		});
-	
+		/*
 		socketio.on('mouseup', function(data){
 			data.userId = canvas.getContext('2d');
 			mup(data.style,data.width,data.x,data.y,data.lineToXlog,data.lineToYLog);
@@ -445,6 +469,30 @@ window.onload = function () {
 			data.userId.moveTo(x,y);
 		}
 		});
+		*/
+		socketio.on('eraseAll', function(data){
+			if(data.users.length > 1){
+				console.log(data.users.length);
+				console.log(data.users);
+				console.log(myId);
+				for(var i = 0; i < data.users.length; i++){
+						if(data.users[i] != myId){
+						var erasecanvas = document.getElementById(data.users[i]);
+						console.log(erasecanvas);
+						data.users[i]= erasecanvas.getContext('2d');
+						data.users[i].fillStyle = '#FFF';
+						data.users[i].fillRect(0,0,w,h);
+					}
+				}
+				ctx.save(); 
+				ctx.fillStyle = '#FFF';
+				ctx.fillRect(0,0,w,h);
+				pathLog.push("#FFF",h,0,h/2,[w],[h/2	]);
+				sketchLog.push(pathLog);		
+				pathLog = [];
+				ctx.restore();
+			}
+		});
 		
-		
+	}
 }

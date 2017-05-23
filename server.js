@@ -32,15 +32,17 @@ console.log('start server');
 
 var io = require('socket.io').listen(server);
 var users = [];
+var allusers = [];
 io.sockets.on('connection',function(socket){
 			　　
 			  socket.on('enter',function(data){
 				  var user = socket.id;
-				  if(users.length != 0){
-					io.to(socket.id).emit('onlyMe', {users:users,userId:user});
+				  users.push(socket.id);
+     			  allusers.push(socket.id);
+				  if(allusers.length != 0){
+					io.to(socket.id).emit('onlyMe', {users:allusers,userId:user});
 				  }
 				
-				users.push(socket.id);
 				socket.broadcast.emit('enter',{userId:user});
 				//io.sockets.emit('enter',{userId:user});
 			
@@ -72,7 +74,7 @@ io.sockets.on('connection',function(socket){
 			})
 			socket.on('eraseAll',function(data){
 				var user = socket.id;
-				io.sockets.emit('eraseAll',{user:user,users:users});
+				io.sockets.emit('eraseAll',{user:user,users:allusers});
 			})
 			
 			socket.on('disconnect',function(){
@@ -81,5 +83,12 @@ io.sockets.on('connection',function(socket){
  					users.splice(idx, 1); 
 				}
 			})
+			
+			socket.on('getallusers',function(data){
+				var user = socket.id;
+				io.to(socket.id).emit('getallusers', {users:allusers,userId:user});
+				
+			})
+			
 			 
 });

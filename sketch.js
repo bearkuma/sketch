@@ -568,7 +568,7 @@ window.onload = function () {
 		});
 		
 		socketio.on('eraseAll', function(data){
-			if(data.users.length > 1){
+			if(data.users.length >= 1){
 				
 				for(var i = 0; i < data.users.length; i++){
 						if(data.users[i] != myId){

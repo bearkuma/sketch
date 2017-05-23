@@ -49,7 +49,8 @@ window.onload = function () {
  //お絵かき張本体
 	var canvas = document.getElementById('canvas');	
 	var subcanvas = document.getElementById('subcanvas');	
-	var backcanvas = document.getElementById('backcanvas');	
+	var backcanvas = document.getElementById('backcanvas');
+	var finalcanvas = document.getElementById('finalcanvas');
 	//cursor画像の初期設定
 	canvas.style.cursor = 'url(color_pencils/black95.png) 0 95,auto';
 		
@@ -62,6 +63,8 @@ window.onload = function () {
 	subcanvas.style.zIndex = -10;
 	backcanvas.width = w;
 	backcanvas.height = h;
+	finalcanvas.width = w;
+	finalcanvas.height = h;
 	
 	if (canvas && canvas.getContext){
 		var ctx = subcanvas.getContext('2d');
@@ -330,6 +333,21 @@ window.onload = function () {
 		}
 		//画像化して保存する
 		intoImg.onclick = function(){
+			socketio.emit('getallusers',{msg:'please'});
+			backcanvas.style.zIndex = 99;
+			finishmsg.style.zIndex = 100;
+			finishmsg.style.display = 'block';
+		};
+		
+		
+		var finishmsg = document.getElementById('finishmsg');
+		socketio.on('getallusers', function(data){
+			//finalcanvas実装
+
+			var fctx = finalcanvas.getContext('2d');
+			fctx.fillStyle = '#FFF';
+			fctx.fillRect(0,0,w,h);
+			//finalcanvas.style.zIndex = 100;
 			/*ctx.fillStyle = '#FFF';
 			ctx.fillRect(0,0,w,h);
 			for (var i = 0; i < sketchLog.length; i++){
@@ -343,19 +361,93 @@ window.onload = function () {
 					ctx.stroke();
 			}
 			*/
-			var imgUrl =subcanvas.toDataURL();// + canvas.toDataURL();	
-			var mydraw = document.createElement('a');
+			//var imgUrl =subcanvas.toDataURL();
+			/*
+			function createImage(context){
+  				var image= new Image;
+  				image.src= context.canvas.toDataURL();
+  				return image;
+			}
+			*/
+			var subcanvas = document.getElementById('subcanvas');
+			//var context = subcanvas.getContext('2d');
+			var image1 = new Image;
+			image1.src = subcanvas.toDataURL();
+			image1.onload = function() {
+				fctx.drawImage(image1,0,0);
+				drawothers();
+				image1.src = '';
+			}
+			
+
+			function drawothers(){
+				
+				//for( var i = 0; i < data.users.length; i++){
+				var i = 0;
+				finalize();
+				function finalize(){
+					if(data.users[i] != myId){
+						var mycanvas = document.getElementById(data.users[i]);
+						//var context = selectcanvas.getContext('2d');
+						var image2 = new Image;
+						image2.src = mycanvas.toDataURL();
+						image2.onload = function() {
+						async function datareading(){	
+							fctx.drawImage(image2,0,0);
+							//image2.src = '';
+							console.log(i);		
+						}
+						datareading().then(finalizingcheck());
+						//datareading().then(v => finalizingcheck());
+						}
+					
+						//}
+					} else {
+						finalizingcheck();
+					}
+						function finalizingcheck(){
+						if(i === data.users.length - 1){
+							drawfinish();
+							console.log('終了')
+						} else {
+							i++;
+							finalize();
+						}
+						}
+					//}
+				}
+				//}
+					
+			}
+			
+			function drawfinish(){
+				finishmsg.style.display = 'none';
+				backcanvas.style.zIndex = -100;
          		var filename = prompt('何というファイル名で保存しますか')
             		if(filename){
+						var imgUrl =finalcanvas.toDataURL();
+						var mydraw = document.createElement('a');
               	  		mydraw.download = filename+'.png';
                 		mydraw.href = imgUrl;
                 		document.body.appendChild(mydraw);
                 		mydraw.click();
                 		document.body.removeChild(mydraw);
-				window.open(imgUrl);
+						window.open(imgUrl);
+						mydraw.href = '';
+						fctx.clearRect(0,0,w,h);
+					}
+				//finalcanvas.style.zIndex = -100;
 			}
-		}
+		});
+					
+					
+
+					
 	
+		
+		
+		
+		
 	
 		
 		start();
@@ -377,7 +469,7 @@ window.onload = function () {
 				mycanvas.style.left = 0;
 				mycanvas.style.zIndex = -10;
 				myId = data.userId;
-				console.log(data.userId);
+				
 			}
 			}
 		});
@@ -397,12 +489,10 @@ window.onload = function () {
 		var moverNum = 0;
 		socketio.on('mousedown', function(data){
 			var thiscanvas = document.getElementById(data.userId);
-			console.log(data.userId);
 			data.userId = thiscanvas.getContext('2d');
 			//data.userId = canvas.getContext('2d');
 			//data.userId.strokeStyle = data.style;
 			//data.userId.lineWidth = data.width;
-			console.log(moverNum);
 			if(moverNum === 0){
 			 mdown(data.x,data.y);
 			} else {
@@ -425,7 +515,6 @@ window.onload = function () {
 		});
 		socketio.on('mousemove', function(data){
 			var thiscanvas = document.getElementById(data.userId);
-			console.log(data.userId);
 			data.userId = thiscanvas.getContext('2d');
 			//data.userId = canvas.getContext('2d');
 			mmove(data.x,data.y);
@@ -483,14 +572,14 @@ window.onload = function () {
 				
 				for(var i = 0; i < data.users.length; i++){
 						if(data.users[i] != myId){
+							
 						var erasecanvas = document.getElementById(data.users[i]);
-						
 						
 						data.users[i]= erasecanvas.getContext('2d');
 						data.users[i].clearRect(0,0,w,h);
 						//data.users[i].fillStyle = '#FFF';
 						//data.users[i].fillRect(0,0,w,h);
-							console.log('hi');
+							
 						/*data.users[i].strokeStyle = '#FFF';
 						data.users[i].lineWidth = h/3;
 						data.users[i].beginPath();

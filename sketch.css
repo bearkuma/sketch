@@ -153,3 +153,6 @@ button:hover {
 #go{
 	display:none;
 }
+progress{
+	width:70vw;
+}

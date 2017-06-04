@@ -333,7 +333,7 @@ window.onload = function () {
 		}
 		//画像化して保存する
 		intoImg.onclick = function(){
-			
+			progress.setAttribute("value",0);
 			socketio.emit('getallusers',{msg:'please'});
 			backcanvas.style.zIndex = 99;
 			finishmsg.style.zIndex = 100;

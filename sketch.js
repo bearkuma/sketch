@@ -333,6 +333,7 @@ window.onload = function () {
 		}
 		//画像化して保存する
 		intoImg.onclick = function(){
+			
 			socketio.emit('getallusers',{msg:'please'});
 			backcanvas.style.zIndex = 99;
 			finishmsg.style.zIndex = 100;
@@ -379,11 +380,13 @@ window.onload = function () {
 				image1.src = '';
 			}
 			
-
+			
+			var progress = document.getElementById('progress');
+			
 			function drawothers(){
-				
 				//for( var i = 0; i < data.users.length; i++){
 				var i = 0;
+				progress.setAttribute("max",(data.users.length-1));
 				finalize();
 				function finalize(){
 					if(data.users[i] != myId){
@@ -406,6 +409,7 @@ window.onload = function () {
 						finalizingcheck();
 					}
 						function finalizingcheck(){
+						progress.setAttribute("value",i);
 						if(i === data.users.length - 1){
 							drawfinish();
 							console.log('終了')

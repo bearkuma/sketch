@@ -390,6 +390,7 @@ window.onload = function () {
 				progress.setAttribute("max",(data.users.length-1));
 				finalize();
 				function finalize(){
+					progress.setAttribute("value",i);
 					if(data.users[i] != myId){
 						var mycanvas = document.getElementById(data.users[i]);
 						//var context = selectcanvas.getContext('2d');
@@ -410,7 +411,6 @@ window.onload = function () {
 						finalizingcheck();
 					}
 						function finalizingcheck(){
-						progress.setAttribute("value",i);
 						if(i === data.users.length - 1){
 							drawfinish();
 							console.log('終了')

@@ -331,6 +331,7 @@ window.onload = function () {
 				ctx.restore();
 			}
 		}
+		var progress = document.getElementById('progress');
 		//画像化して保存する
 		intoImg.onclick = function(){
 			progress.setAttribute("value",0);
@@ -381,7 +382,7 @@ window.onload = function () {
 			}
 			
 			
-			var progress = document.getElementById('progress');
+			
 			
 			function drawothers(){
 				//for( var i = 0; i < data.users.length; i++){
